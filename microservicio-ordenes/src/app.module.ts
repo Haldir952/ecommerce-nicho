@@ -6,18 +6,17 @@ import { OrdenesModule } from './ordenes/ordenes.module.js';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'admin',
-      password: 'password123',
-      database: 'ordenes_db',
-      autoLoadEntities: true,
-      synchronize: true, // Solo para desarrollo, crea las tablas automáticamente
-    }),
+    type: 'postgres',
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '5432', 10),
+    username: process.env.DB_USER || 'admin',
+    password: process.env.DB_PASSWORD || 'password123',
+    database: process.env.DB_NAME || 'ordenes_db',
+    autoLoadEntities: true,
+    synchronize: true,
+}),
     OrdenesModule,
   ],
-  controllers: [],
   providers: [],
 })
 export class AppModule {}
