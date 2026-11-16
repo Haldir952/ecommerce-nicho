@@ -1,0 +1,34 @@
+name: Integración Continua - Frontend
+
+# Esto le dice a GitHub que ejecute el proceso solo cuando empujemos código a estas ramas
+on:
+  push:
+    branches:
+      - main
+      - 'release/**'
+
+jobs:
+  build-microfrontends:
+    name: Compilar Catálogo y App Shell
+    runs-on: ubuntu-latest # El servidor virtual de GitHub
+
+    steps:
+      - name: 📥 Descargar el código del repositorio
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Usamos una versión estable de servidor
+
+      - name: 📦 MFE Catálogo - Instalar y Compilar
+        run: |
+          cd mfe-catalogo
+          npm install
+          npm run build
+
+      - name: 📦 App Shell - Instalar y Compilar
+        run: |
+          cd app-shell
+          npm install
+          npm run build
