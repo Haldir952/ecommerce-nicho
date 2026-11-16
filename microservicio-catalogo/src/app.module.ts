@@ -4,7 +4,7 @@ import { ProductosModule } from './productos/productos.module.js';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/catalogo_db'),
+    MongooseModule.forRoot('mongodb://localhost:27017/catalogo'),
     ProductosModule,
   ],
   providers: [],
