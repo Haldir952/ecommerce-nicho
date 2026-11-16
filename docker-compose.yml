@@ -1,8 +1,18 @@
 version: '3.8'
+
 services:
-  postgres_db:
-    image: postgres:15
-    container_name: ecommerce_postgres
+  # --- BASES DE DATOS ---
+  mongodb:
+    image: mongo:latest
+    container_name: ecommerce-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: ecommerce-postgres
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password123
@@ -10,16 +20,34 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
 
-  mongo_db:
-    image: mongo:6.0
-    container_name: ecommerce_mongo
+  # --- MICROSERVICIOS NEST.JS ---
+  ms-catalogo:
+    build: ./microservicio-catalogo
+    container_name: ecommerce-microservicio-catalogo
     ports:
-      - "27017:27017"
-    volumes:
-      - mongodata:/data/db
+      - "3000:3000"
+    environment:
+      # Dentro de Docker, nos conectamos usando el nombre del servicio ("mongodb"), no "localhost"
+      MONGO_URI: mongodb://mongodb:27017/catalogo
+    depends_on:
+      - mongodb
+
+  ms-ordenes:
+    build: ./microservicio-ordenes
+    container_name: ecommerce-microservicio-ordenes
+    ports:
+      - "3001:3001"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: admin
+      DB_PASSWORD: password123
+      DB_NAME: ordenes_db
+    depends_on:
+      - postgres
 
 volumes:
-  pgdata:
-  mongodata:
+  mongo_data:
+  postgres_data:
